@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARISE – A Gamified Life System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="cursor" class="custom-cursor"></div>
+    <div id="cursor-follower" class="custom-cursor-follower"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="app" class="app-container">
+        <!-- Page 1: Landing Page -->
+        <section id="page-landing" class="page">
+            <div class="content-center">
+                <h1 class="system-alert-title">
+                    <span class="word-system">SYSTEM</span>
+                    <span class="word-alert">ALERT</span>
+                </h1>
+                <p class="landing-subtitle wait-1">You've met the hidden requirements</p>
+                <p class="landing-subtitle wait-2 mt-2">Are you ready to become a player?</p>
+                <button id="btn-login" class="glow-btn reveal-on-scroll mt-8">Login with Google</button>
+            </div>
+        </section>
+
+        <!-- Page 2: Awakening Questions -->
+        <section id="page-awakening" class="page locked">
+            <div class="content-center">
+                <h2 class="system-text reveal-text">Do you want to change yourself?</h2>
+                <div class="btn-group reveal-on-scroll mt-8">
+                    <button id="btn-awake-yes" class="glow-btn success">Yes</button>
+                    <button id="btn-awake-no" class="glow-btn danger">No</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clown Page (Hidden Page) -->
+        <section id="page-clown" class="page locked">
+            <div class="content-center">
+                <h1 class="clown-text reveal-on-scroll">🤡 Return to the circus.</h1>
+            </div>
+        </section>
+
+        <!-- Page 3: User Details -->
+        <section id="page-details" class="page locked">
+            <div class="content-center panel-glass reveal-on-scroll">
+                <h2 class="glow-title">Initialize Profile</h2>
+                <div class="input-group">
+                    <label>Player Name</label>
+                    <input type="text" id="input-name" placeholder="Enter designation...">
+                </div>
+                <div class="input-group">
+                    <label>Player Age</label>
+                    <input type="number" id="input-age" placeholder="Enter chronological age...">
+                </div>
+                <button id="btn-save-details" class="glow-btn advance mt-4">Proceed</button>
+            </div>
+        </section>
+
+        <!-- Page 4: Template Selection -->
+        <section id="page-template" class="page locked">
+            <div class="template-header reveal-on-scroll" style="text-align: center; margin-bottom: 3rem; position: relative; z-index: 10;">
+                <h2 class="glow-title" style="font-size: 2rem;">Select Protocol Template</h2>
+            </div>
+            <div class="cards-container reveal-on-scroll">
+                <div class="card" data-template="morning">
+                    <h3>Morning Bird</h3>
+                    <p>Early wake routine with structured morning productivity.</p>
+                </div>
+                <div class="card" data-template="night">
+                    <h3>Night Owl</h3>
+                    <p>Late productivity schedule designed for night workers.</p>
+                </div>
+                <div class="card" data-template="lazy">
+                    <h3>Lazy Mode</h3>
+                    <p>Beginner-friendly small goals to build discipline slowly.</p>
+                </div>
+                <div class="card" data-template="custom">
+                    <h3>Custom System</h3>
+                    <p>Create your own specialized protocol.</p>
+                </div>
+            </div>
+            <button id="btn-confirm-template" class="glow-btn advance hidden" style="margin-top: 2rem;">Confirm Selection</button>
+
+            <!-- Custom Template Builder -->
+            <div id="custom-builder" class="overlay hidden">
+                <div class="panel-glass custom-panel reveal-on-scroll" style="min-width: 400px; text-align: center;">
+                    <h3 class="glow-title">Building Custom Protocol</h3>
+                    <div id="custom-task-list" style="margin-bottom: 20px;"></div>
+                    <div class="input-row" style="display:flex; justify-content:center; align-items:center; gap: 15px;">
+                        <input type="text" id="input-custom-task" placeholder="Task description..." style="flex:1;">
+                        <button id="btn-add-custom-task" class="glow-btn small" style="min-width: 60px;">+</button>
+                    </div>
+                    <button id="btn-save-custom" class="glow-btn success" style="margin-top: 30px;">Initialize Protocol</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 5: Dashboard -->
+        <section id="page-dashboard" class="page dashboard locked" style="justify-content: flex-start; padding-top: 80px;">
+            <header class="dashboard-header reveal-on-scroll" style="width: 100%; max-width: 800px; display:flex; justify-content: space-between; align-items:center; background: rgba(15,15,25,0.7); backdrop-filter: blur(15px); padding: 25px; border-radius: 12px; border: 1px solid rgba(0,243,255,0.3); margin-bottom: 40px;">
+                <div class="user-info text-left">
+                    <h2 id="dash-name" style="font-weight: 300; font-size: 2rem; margin-bottom: 10px;">Player_Unknown</h2>
+                    <span class="badge" style="background: rgba(188,19,254,0.2); border: 1px solid var(--neon-purple); padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; color: #fff; text-transform:uppercase; letter-spacing:1.5px;">Level <span id="dash-level">1</span></span>
+                </div>
+                <div class="stats" style="display:flex; gap: 40px; text-align: center;">
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-sec); text-transform:uppercase; letter-spacing:1.5px; margin-bottom: 5px;">XP</div>
+                        <div id="dash-xp" style="font-size: 2.2rem; font-weight: 600; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue);">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-sec); text-transform:uppercase; letter-spacing:1.5px; margin-bottom: 5px;">Streak</div>
+                        <div style="font-size: 2.2rem; font-weight: 600; color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red);"><span id="dash-streak">0</span> <span style="font-size:1.4rem;">🔥</span></div>
+                    </div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <button id="btn-logout" class="glow-btn danger small">Logout</button>
+                </div>
+            </header>
+
+            <div class="progress-section reveal-on-scroll" style="width: 100%; max-width: 800px; margin-bottom: 40px;">
+                <div style="display:flex; justify-content: space-between; margin-bottom: 12px; color: var(--neon-blue); text-transform:uppercase; font-size: 1rem; letter-spacing: 1.5px;">
+                    <span>Daily Progress</span>
+                    <span id="dash-percent">0%</span>
+                </div>
+                <div style="width:100%; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,0,0,0.6);">
+                    <div id="dash-progress" style="height:100%; width:0%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); transition: width 2s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 0 15px var(--neon-blue);"></div>
+                </div>
+            </div>
+
+            <div class="tasks-section reveal-on-scroll" style="width: 100%; max-width: 800px;">
+                <h3 class="glow-title" style="font-size:1.4rem; margin-bottom: 25px; text-align: left;">Active Objectives</h3>
+                <div id="task-list" style="display:flex; flex-direction:column; gap: 20px;">
+                    <!-- Tasks inserted dynamically -->
+                </div>
+            </div>
+            
+            <div class="reveal-on-scroll" style="width: 100%; max-width: 800px; text-align: right; margin-top: 50px; margin-bottom: 40px;">
+                <button id="btn-reset-template" class="glow-btn danger small">Delete Protocol</button>
+            </div>
+        </section>
+
+        <!-- Delete Warning Overlay -->
+        <div id="delete-warning-overlay" class="overlay hidden" style="z-index: 200;">
+            <div class="panel-glass delete-panel" style="max-width: 500px; text-align: center;">
+                <h3 class="glow-title" style="color: var(--neon-red); text-shadow: 0 0 15px var(--neon-red);">SYSTEM WARNING</h3>
+                <p style="margin-bottom: 30px; color: var(--text-sec); font-size: 1.1rem; line-height: 1.6;">
+                    If you delete your current protocol, <strong style="color:var(--neon-red);">tasks cannot be performed on the same day</strong>. <br><br>The new template will be in use from the next day. Please complete your current necessary tasks before proceeding.
+                </p>
+                <div class="btn-group">
+                    <button id="btn-cancel-delete" class="glow-btn small">Cancel</button>
+                    <button id="btn-confirm-delete" class="glow-btn danger small">Proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase configuration script -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+      import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+      import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDENADUsR5LhgY-fVc7uvdz8_i-vpW4RaM",
+        authDomain: "arise-5d302.firebaseapp.com",
+        databaseURL: "https://arise-5d302-default-rtdb.firebaseio.com",
+        projectId: "arise-5d302",
+        storageBucket: "arise-5d302.firebasestorage.app",
+        messagingSenderId: "1043632724032",
+        appId: "1:1043632724032:web:1c3192bf68469fa69e27a5",
+        measurementId: "G-ZRGHBSEKZX"
+      };
+      
+      let _app, auth, db, provider, analytics;
+      try {
+        if(firebaseConfig && firebaseConfig.apiKey) {
+          _app = initializeApp(firebaseConfig);
+          analytics = getAnalytics(_app);
+          auth = getAuth(_app);
+          db = getDatabase(_app);
+          provider = new GoogleAuthProvider();
+          window.firebaseApp = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, ref, set, get, child };
+          console.log("Firebase initialized successfully");
+        }
+      } catch(e) { console.warn("Firebase INIT ERR", e); }
+    </script>
+    <script src="./app.js"></script>
+</body>
+</html>
